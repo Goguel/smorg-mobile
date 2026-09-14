@@ -1,0 +1,25 @@
+# Gradle & Build
+.gradle/
+build/
+**/build/
+
+# Android Studio & IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android SDK local configuration
+local.properties
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Kotlin Multiplatform / Native
+*.hprof
+.konan/
