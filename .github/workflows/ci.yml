@@ -21,30 +21,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Configurar e Cache do Gradle
         uses: gradle/actions/setup-gradle@v3
 
       - name: Dar permissão de execução ao Gradle Wrapper
-        run: |
-          if [ -f "./gradlew" ]; then
-            chmod +x gradlew
-          fi
+        run: chmod +x gradlew
 
       - name: Análise Estática (ktlint e detekt)
-        run: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew ktlintCheck detekt --continue
-          else
-            echo "Gradle wrapper ainda não presente. Esta etapa será executada quando o esqueleto KMP for versionado."
-          fi
+        run: ./gradlew ktlintCheck detekt --continue
 
       - name: Compilar App Android (assembleDebug)
-        run: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug
-          else
-            echo "Aguardando adição do esqueleto KMP para compilação do APK de debug."
-          fi
+        run: ./gradlew assembleDebug
