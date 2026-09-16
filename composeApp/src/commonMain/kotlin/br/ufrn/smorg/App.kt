@@ -44,52 +44,54 @@ fun App() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
-            val sampleItems = remember {
-                listOf(
-                    Equipment(
-                        id = "EQ-001",
-                        name = "Osciloscópio Digital 100MHz",
-                        category = "Bancada e Medição",
-                        nfcTagId = "04:A2:8B:1A:5C",
-                        status = EquipmentStatus.AVAILABLE,
-                    ),
-                    Equipment(
-                        id = "EQ-002",
-                        name = "Multímetro Digital True RMS",
-                        category = "Instrumentação",
-                        nfcTagId = "04:C5:91:2B:7E",
-                        status = EquipmentStatus.BORROWED,
-                        borrowerName = "Miguel Morais (20240027427)",
-                        returnDueDate = "18/09/2026",
-                    ),
-                    Equipment(
-                        id = "EQ-003",
-                        name = "Kit Didático ESP32 IoT",
-                        category = "Microcontroladores",
-                        nfcTagId = "04:7F:3D:E4:90",
-                        status = EquipmentStatus.AVAILABLE,
-                    ),
-                    Equipment(
-                        id = "EQ-004",
-                        name = "Fonte de Alimentação DC 30V 5A",
-                        category = "Bancada e Medição",
-                        nfcTagId = "04:18:22:9C:AA",
-                        status = EquipmentStatus.MAINTENANCE,
-                    ),
-                )
-            }
+            val sampleItems =
+                remember {
+                    listOf(
+                        Equipment(
+                            id = "EQ-001",
+                            name = "Osciloscópio Digital 100MHz",
+                            category = "Bancada e Medição",
+                            nfcTagId = "04:A2:8B:1A:5C",
+                            status = EquipmentStatus.AVAILABLE,
+                        ),
+                        Equipment(
+                            id = "EQ-002",
+                            name = "Multímetro Digital True RMS",
+                            category = "Instrumentação",
+                            nfcTagId = "04:C5:91:2B:7E",
+                            status = EquipmentStatus.BORROWED,
+                            borrowerName = "Miguel Morais (20240027427)",
+                            returnDueDate = "18/09/2026",
+                        ),
+                        Equipment(
+                            id = "EQ-003",
+                            name = "Kit Didático ESP32 IoT",
+                            category = "Microcontroladores",
+                            nfcTagId = "04:7F:3D:E4:90",
+                            status = EquipmentStatus.AVAILABLE,
+                        ),
+                        Equipment(
+                            id = "EQ-004",
+                            name = "Fonte de Alimentação DC 30V 5A",
+                            category = "Bancada e Medição",
+                            nfcTagId = "04:18:22:9C:AA",
+                            status = EquipmentStatus.MAINTENANCE,
+                        ),
+                    )
+                }
 
             var selectedStatus by remember { mutableStateOf<EquipmentStatus?>(null) }
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
 
-            val filteredItems = remember(selectedStatus, sampleItems) {
-                if (selectedStatus == null) {
-                    sampleItems
-                } else {
-                    sampleItems.filter { it.status == selectedStatus }
+            val filteredItems =
+                remember(selectedStatus, sampleItems) {
+                    if (selectedStatus == null) {
+                        sampleItems
+                    } else {
+                        sampleItems.filter { it.status == selectedStatus }
+                    }
                 }
-            }
 
             EquipmentCatalogScreen(
                 items = filteredItems,
@@ -136,18 +138,20 @@ fun EquipmentCatalogScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) {
             FilterSection(
                 selectedFilter = selectedFilter,
@@ -181,17 +185,19 @@ fun FilterSection(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         EquipmentStatus.entries.forEach { status ->
-            val label = when (status) {
-                EquipmentStatus.AVAILABLE -> "Disponíveis"
-                EquipmentStatus.BORROWED -> "Emprestados"
-                EquipmentStatus.MAINTENANCE -> "Manutenção"
-            }
+            val label =
+                when (status) {
+                    EquipmentStatus.AVAILABLE -> "Disponíveis"
+                    EquipmentStatus.BORROWED -> "Emprestados"
+                    EquipmentStatus.MAINTENANCE -> "Manutenção"
+                }
             FilterChip(
                 selected = selectedFilter == status,
                 onClick = { onFilterSelect(status) },
@@ -204,9 +210,10 @@ fun FilterSection(
 @Composable
 fun EmptyCatalogState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(32.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

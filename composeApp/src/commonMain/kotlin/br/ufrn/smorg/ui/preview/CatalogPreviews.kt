@@ -16,13 +16,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun EquipmentCardPreview() {
     MaterialTheme {
         EquipmentCard(
-            equipment = Equipment(
-                id = "PREV-001",
-                name = "Osciloscópio Digital 100MHz",
-                category = "Bancada e Medição",
-                nfcTagId = "04:A2:8B:1A:5C",
-                status = EquipmentStatus.AVAILABLE,
-            ),
+            equipment =
+                Equipment(
+                    id = "PREV-001",
+                    name = "Osciloscópio Digital 100MHz",
+                    category = "Bancada e Medição",
+                    nfcTagId = "04:A2:8B:1A:5C",
+                    status = EquipmentStatus.AVAILABLE,
+                ),
             onClick = {},
         )
     }
@@ -40,23 +41,24 @@ fun EquipmentCatalogEmptyPreview() {
 @Composable
 fun EquipmentCatalogFullPreview() {
     MaterialTheme {
-        val sampleList = listOf(
-            Equipment(
-                id = "PREV-001",
-                name = "Osciloscópio Digital 100MHz",
-                category = "Bancada e Medição",
-                nfcTagId = "04:A2:8B:1A:5C",
-                status = EquipmentStatus.AVAILABLE,
-            ),
-            Equipment(
-                id = "PREV-002",
-                name = "Multímetro Digital True RMS",
-                category = "Instrumentação",
-                nfcTagId = "04:C5:91:2B:7E",
-                status = EquipmentStatus.BORROWED,
-                borrowerName = "Miguel Morais",
-            ),
-        )
+        val sampleList =
+            listOf(
+                Equipment(
+                    id = "PREV-001",
+                    name = "Osciloscópio Digital 100MHz",
+                    category = "Bancada e Medição",
+                    nfcTagId = "04:A2:8B:1A:5C",
+                    status = EquipmentStatus.AVAILABLE,
+                ),
+                Equipment(
+                    id = "PREV-002",
+                    name = "Multímetro Digital True RMS",
+                    category = "Instrumentação",
+                    nfcTagId = "04:C5:91:2B:7E",
+                    status = EquipmentStatus.BORROWED,
+                    borrowerName = "Miguel Morais",
+                ),
+            )
         val snackbarHostState = remember { SnackbarHostState() }
         EquipmentCatalogScreen(
             items = sampleList,

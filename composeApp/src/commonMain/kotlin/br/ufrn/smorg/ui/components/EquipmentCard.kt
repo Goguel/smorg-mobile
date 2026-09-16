@@ -30,35 +30,40 @@ fun EquipmentCard(
     onClick: (Equipment) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val statusLabel = when (equipment.status) {
-        EquipmentStatus.AVAILABLE -> "Disponível"
-        EquipmentStatus.BORROWED -> "Emprestado"
-        EquipmentStatus.MAINTENANCE -> "Em Manutenção"
-    }
+    val statusLabel =
+        when (equipment.status) {
+            EquipmentStatus.AVAILABLE -> "Disponível"
+            EquipmentStatus.BORROWED -> "Emprestado"
+            EquipmentStatus.MAINTENANCE -> "Em Manutenção"
+        }
 
-    val statusColor = when (equipment.status) {
-        EquipmentStatus.AVAILABLE -> MaterialTheme.colorScheme.primary
-        EquipmentStatus.BORROWED -> MaterialTheme.colorScheme.error
-        EquipmentStatus.MAINTENANCE -> MaterialTheme.colorScheme.outline
-    }
+    val statusColor =
+        when (equipment.status) {
+            EquipmentStatus.AVAILABLE -> MaterialTheme.colorScheme.primary
+            EquipmentStatus.BORROWED -> MaterialTheme.colorScheme.error
+            EquipmentStatus.MAINTENANCE -> MaterialTheme.colorScheme.outline
+        }
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick(equipment) }
-            .semantics {
-                contentDescription = "Equipamento ${equipment.name}, status $statusLabel"
-            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onClick(equipment) }
+                .semantics {
+                    contentDescription = "Equipamento ${equipment.name}, status $statusLabel"
+                },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -87,13 +92,15 @@ fun EquipmentCard(
                             color = statusColor,
                         )
                     },
-                    colors = SuggestionChipDefaults.suggestionChipColors(
-                        containerColor = statusColor.copy(alpha = 0.12f),
-                    ),
-                    border = SuggestionChipDefaults.suggestionChipBorder(
-                        enabled = true,
-                        borderColor = statusColor.copy(alpha = 0.4f),
-                    ),
+                    colors =
+                        SuggestionChipDefaults.suggestionChipColors(
+                            containerColor = statusColor.copy(alpha = 0.12f),
+                        ),
+                    border =
+                        SuggestionChipDefaults.suggestionChipBorder(
+                            enabled = true,
+                            borderColor = statusColor.copy(alpha = 0.4f),
+                        ),
                 )
             }
 
