@@ -39,20 +39,21 @@
 
 ## 3. Backlog Inicial
 
-O backlog e o quadro Kanban integrado do projeto SmOrg estão hospedados no GitHub Projects da organização/usuário:  
-**Quadro do Projeto:** [https://github.com/users/Goguel/projects/2](https://github.com/users/Goguel/projects/2)
+O backlog e o quadro Kanban integrado do projeto SmOrg Mobile estão hospedados no GitHub Projects:  
+**Quadro do Projeto:** [https://github.com/users/Goguel/projects/3](https://github.com/users/Goguel/projects/3)  
+As especificações completas de cada história estão documentadas na pasta [`docs/backlog/`](./backlog/README.md).
 
 ### Histórias de Usuário Priorizadas
 
-| Prio | História de Usuário | Critérios de Aceitação | Sprint Prevista |
-|:---:|---|---|:---:|
-| **P1** | **Como aluno**, quero aproximar meu celular da tag NFC de um equipamento para visualizar rapidamente sua identificação, detalhes e disponibilidade. | 1. O app detecta a tag NFC em primeiro plano.<br>2. Exibe o nome, modelo e status atual (Disponível / Ocupado).<br>3. Exibe alerta sonoro/tátil de leitura com sucesso. | Sprint 1 |
-| **P1** | **Como aluno**, quero confirmar o empréstimo de um item disponível aproximando o celular para registrá-lo sob minha responsabilidade acadêmica. | 1. O app envia a requisição de empréstimo para a API Ktor.<br>2. Recebe e exibe o prazo final de devolução calculado pelo serviço Go.<br>3. O status na interface atualiza imediatamente para "Emprestado". | Sprint 1 / 2 |
-| **P1** | **Como monitor**, quero registrar a devolução de um equipamento através da leitura NFC para liberar o item no inventário do laboratório. | 1. Valida se o item estava sob custódia de algum aluno.<br>2. Chama endpoint de devolução e fecha a transação.<br>3. Altera o status para "Disponível". | Sprint 1 / 2 |
-| **P1** | **Como aluno**, quero visualizar a lista dos equipamentos que estão atualmente em minha posse para acompanhar os prazos de entrega. | 1. Tela com lista dos itens emprestados pelo usuário logado.<br>2. Exibição clara da data limite de devolução com destaque visual para prazos próximos. | Sprint 1 |
-| **P2** | **Como aluno/monitor**, quero consultar o catálogo geral de equipamentos do laboratório para saber quais materiais estão livres para retirada. | 1. Lista paginada/filtrável de equipamentos por categoria.<br>2. Indicador visual claro de status (Disponível / Em uso).<br>3. Busca textual rápida por nome ou tag. | Sprint 1 |
-| **P3** | **Como usuário**, quero autenticar-me com minha matrícula para garantir que os registros de ativos sejam vinculados à minha conta com segurança. | 1. Tela de login com matrícula e senha.<br>2. Armazenamento seguro de token JWT no Keystore seguro da plataforma.<br>3. Interceptor de autorização nas requisições HTTP. | Sprint 3 |
-| **P2** | **Como usuário**, quero que o app armazene localmente a lista de equipamentos para permitir consulta rápida mesmo em áreas do laboratório com sinal Wi-Fi instável. | 1. Persistência local (Room / SQLDelight).<br>2. O app abre e lista os itens a partir do cache quando sem internet.<br>3. Sincroniza dados com o backend ao restabelecer a conexão. | Sprint 3 |
+| Prio | História de Usuário | Critérios de Aceitação | Sprint Prevista | Documento Detalhado |
+|:---:|---|---|:---:|:---:|
+| **P1** | **Como aluno**, quero aproximar meu celular da tag NFC de um equipamento para visualizar rapidamente sua identificação, detalhes e disponibilidade. | 1. O app detecta a tag NFC em primeiro plano.<br>2. Exibe o nome, modelo e status atual (Disponível / Ocupado).<br>3. Exibe alerta sonoro/tátil de leitura com sucesso. | Sprint 1 | [Issue #1](./backlog/issue-1-leitura-identificacao-nfc.md) |
+| **P1** | **Como aluno**, quero confirmar o empréstimo de um item disponível aproximando o celular para registrá-lo sob minha responsabilidade acadêmica. | 1. O app envia a requisição de empréstimo para a API Ktor.<br>2. Recebe e exibe o prazo final de devolução calculado pelo serviço Go.<br>3. O status na interface atualiza imediatamente para "Emprestado". | Sprint 1 / 2 | [Issue #2](./backlog/issue-2-confirmar-retirada.md) |
+| **P1** | **Como monitor**, quero registrar a devolução de um equipamento através da leitura NFC para liberar o item no inventário do laboratório. | 1. Valida se o item estava sob custódia de algum aluno.<br>2. Chama endpoint de devolução e fecha a transação.<br>3. Altera o status para "Disponível". | Sprint 1 / 2 | [Issue #3](./backlog/issue-3-registrar-devolucao.md) |
+| **P1** | **Como aluno**, quero visualizar a lista dos equipamentos que estão atualmente em minha posse para acompanhar os prazos de entrega. | 1. Tela com lista dos itens emprestados pelo usuário logado.<br>2. Exibição clara da data limite de devolução com destaque visual para prazos próximos. | Sprint 1 | [Issue #4](./backlog/issue-4-meus-emprestimos-ativos.md) |
+| **P2** | **Como aluno/monitor**, quero consultar o catálogo geral de equipamentos do laboratório para saber quais materiais estão livres para retirada. | 1. Lista paginada/filtrável de equipamentos por categoria.<br>2. Indicador visual claro de status (Disponível / Em uso).<br>3. Busca textual rápida por nome ou tag. | Sprint 1 | [Issue #5](./backlog/issue-5-catalogo-e-busca.md) |
+| **P3** | **Como usuário**, quero autenticar-me com minha matrícula para garantir que os registros de ativos sejam vinculados à minha conta com segurança. | 1. Tela de login com matrícula e senha.<br>2. Armazenamento seguro de token JWT no Keystore seguro da plataforma.<br>3. Interceptor de autorização nas requisições HTTP. | Sprint 3 | [Issue #6](./backlog/issue-6-autenticacao-jwt.md) |
+| **P2** | **Como usuário**, quero que o app armazene localmente a lista de equipamentos para permitir consulta rápida mesmo em áreas do laboratório com sinal Wi-Fi instável. | 1. Persistência local (Room / SQLDelight).<br>2. O app abre e lista os itens a partir do cache quando sem internet.<br>3. Sincroniza dados com o backend ao restabelecer a conexão. | Sprint 3 | [Issue #7](./backlog/issue-7-offline-first-cache.md) |
 
 ---
 
