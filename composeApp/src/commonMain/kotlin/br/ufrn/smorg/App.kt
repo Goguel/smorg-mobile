@@ -36,78 +36,130 @@ import br.ufrn.smorg.model.Equipment
 import br.ufrn.smorg.model.EquipmentStatus
 import br.ufrn.smorg.ui.components.EquipmentCard
 import kotlinx.coroutines.launch
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+import br.ufrn.smorg.ui.screens.LoginScreen
+
+@Serializable
+object LoginRoute
+
+@Serializable
+object HomeRoute
+
+@Serializable
+data class EquipmentDetailsRoute(val id: String)
+
+@Serializable
+object ReturnEquipmentRoute
 
 @Composable
 fun App() {
     MaterialTheme {
+        val navController = rememberNavController()
+
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
-            val sampleItems =
-                remember {
-                    listOf(
-                        Equipment(
-                            id = "EQ-001",
-                            name = "Osciloscópio Digital 100MHz",
-                            category = "Bancada e Medição",
-                            nfcTagId = "04:A2:8B:1A:5C",
-                            status = EquipmentStatus.AVAILABLE,
-                        ),
-                        Equipment(
-                            id = "EQ-002",
-                            name = "Multímetro Digital True RMS",
-                            category = "Instrumentação",
-                            nfcTagId = "04:C5:91:2B:7E",
-                            status = EquipmentStatus.BORROWED,
-                            borrowerName = "Miguel Morais (20240027427)",
-                            returnDueDate = "18/09/2026",
-                        ),
-                        Equipment(
-                            id = "EQ-003",
-                            name = "Kit Didático ESP32 IoT",
-                            category = "Microcontroladores",
-                            nfcTagId = "04:7F:3D:E4:90",
-                            status = EquipmentStatus.AVAILABLE,
-                        ),
-                        Equipment(
-                            id = "EQ-004",
-                            name = "Fonte de Alimentação DC 30V 5A",
-                            category = "Bancada e Medição",
-                            nfcTagId = "04:18:22:9C:AA",
-                            status = EquipmentStatus.MAINTENANCE,
-                        ),
+            NavHost(
+                navController = navController,
+                startDestination = LoginRoute
+            ) {
+                composable<LoginRoute> {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            navController.navigate(HomeRoute) {
+                                popUpTo<LoginRoute> { inclusive = true }
+                            }
+                        }
                     )
                 }
 
-            var selectedStatus by remember { mutableStateOf<EquipmentStatus?>(null) }
-            val snackbarHostState = remember { SnackbarHostState() }
-            val scope = rememberCoroutineScope()
+                composable<HomeRoute> {
+                    val sampleItems =
+                        remember {
+                            listOf(
+                                Equipment(
+                                    id = "EQ-001",
+                                    name = "Osciloscópio Digital 100MHz",
+                                    category = "Bancada e Medição",
+                                    nfcTagId = "04:A2:8B:1A:5C",
+                                    status = EquipmentStatus.AVAILABLE,
+                                ),
+                                Equipment(
+                                    id = "EQ-002",
+                                    name = "Multímetro Digital True RMS",
+                                    category = "Instrumentação",
+                                    nfcTagId = "04:C5:91:2B:7E",
+                                    status = EquipmentStatus.BORROWED,
+                                    borrowerName = "Miguel Morais (20240027427)",
+                                    returnDueDate = "18/09/2026",
+                                ),
+                                Equipment(
+                                    id = "EQ-003",
+                                    name = "Kit Didático ESP32 IoT",
+                                    category = "Microcontroladores",
+                                    nfcTagId = "04:7F:3D:E4:90",
+                                    status = EquipmentStatus.AVAILABLE,
+                                ),
+                                Equipment(
+                                    id = "EQ-004",
+                                    name = "Fonte de Alimentação DC 30V 5A",
+                                    category = "Bancada e Medição",
+                                    nfcTagId = "04:18:22:9C:AA",
+                                    status = EquipmentStatus.MAINTENANCE,
+                                ),
+                            )
+                        }
 
-            val filteredItems =
-                remember(selectedStatus, sampleItems) {
-                    if (selectedStatus == null) {
-                        sampleItems
-                    } else {
-                        sampleItems.filter { it.status == selectedStatus }
+                    var selectedStatus by remember { mutableStateOf<EquipmentStatus?>(null) }
+                    val snackbarHostState = remember { SnackbarHostState() }
+
+                    val filteredItems =
+                        remember(selectedStatus, sampleItems) {
+                            if (selectedStatus == null) {
+                                sampleItems
+                            } else {
+                                sampleItems.filter { it.status == selectedStatus }
+                            }
+                        }
+
+                    EquipmentCatalogScreen(
+                        items = filteredItems,
+                        selectedFilter = selectedStatus,
+                        snackbarHostState = snackbarHostState,
+                        onFilterSelect = { newFilter ->
+                            selectedStatus = if (selectedStatus == newFilter) null else newFilter
+                        },
+                        onEquipmentClick = { eq ->
+                            navController.navigate(EquipmentDetailsRoute(id = eq.id))
+                        },
+                    )
+                }
+
+                composable<EquipmentDetailsRoute> { backStackEntry ->
+                    val details: EquipmentDetailsRoute = backStackEntry.toRoute()
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Detalhes do Equipamento", style = MaterialTheme.typography.headlineMedium)
+                            Text("ID Solicitado: ${details.id}")
+                            Spacer(Modifier.height(16.dp))
+                            androidx.compose.material3.Button(onClick = { navController.popBackStack() }) {
+                                Text("Voltar")
+                            }
+                        }
                     }
                 }
 
-            EquipmentCatalogScreen(
-                items = filteredItems,
-                selectedFilter = selectedStatus,
-                snackbarHostState = snackbarHostState,
-                onFilterSelect = { newFilter ->
-                    selectedStatus = if (selectedStatus == newFilter) null else newFilter
-                },
-                onEquipmentClick = { eq ->
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Equipamento: ${eq.name} (Tag: ${eq.nfcTagId})",
-                        )
+                composable<ReturnEquipmentRoute> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Tela de Devolução", style = MaterialTheme.typography.headlineMedium)
                     }
-                },
-            )
+                }
+            }
         }
     }
 }
