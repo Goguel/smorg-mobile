@@ -26,22 +26,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import br.ufrn.smorg.model.Equipment
-import br.ufrn.smorg.model.EquipmentStatus
-import br.ufrn.smorg.ui.components.EquipmentCard
-import kotlinx.coroutines.launch
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import kotlinx.serialization.Serializable
+import br.ufrn.smorg.model.Equipment
+import br.ufrn.smorg.model.EquipmentStatus
+import br.ufrn.smorg.ui.components.EquipmentCard
 import br.ufrn.smorg.ui.screens.LoginScreen
+import kotlinx.serialization.Serializable
 
 @Serializable
 object LoginRoute
@@ -50,7 +48,9 @@ object LoginRoute
 object HomeRoute
 
 @Serializable
-data class EquipmentDetailsRoute(val id: String)
+data class EquipmentDetailsRoute(
+    val id: String,
+)
 
 @Serializable
 object ReturnEquipmentRoute
@@ -66,7 +66,7 @@ fun App() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = LoginRoute
+                startDestination = LoginRoute,
             ) {
                 composable<LoginRoute> {
                     LoginScreen(
@@ -74,7 +74,7 @@ fun App() {
                             navController.navigate(HomeRoute) {
                                 popUpTo<LoginRoute> { inclusive = true }
                             }
-                        }
+                        },
                     )
                 }
 

@@ -32,41 +32,42 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var identifier by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    
+
     var identifierError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "SmOrg",
                 style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             Text(
                 text = "Acesso ao Sistema",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
             OutlinedTextField(
                 value = identifier,
-                onValueChange = { 
+                onValueChange = {
                     identifier = it
                     identifierError = null // Limpa o erro ao digitar
                 },
@@ -76,7 +77,7 @@ fun LoginScreen(
                     if (identifierError != null) {
                         Text(
                             text = identifierError!!,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
                         )
                     }
                 },
@@ -85,14 +86,14 @@ fun LoginScreen(
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = password,
-                onValueChange = { 
+                onValueChange = {
                     password = it
                     passwordError = null // Limpa o erro ao digitar
                 },
@@ -102,7 +103,7 @@ fun LoginScreen(
                     if (passwordError != null) {
                         Text(
                             text = passwordError!!,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
                         )
                     }
                 },
@@ -112,7 +113,7 @@ fun LoginScreen(
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -120,28 +121,29 @@ fun LoginScreen(
             Button(
                 onClick = {
                     var isValid = true
-                    
+
                     if (identifier.isBlank()) {
                         identifierError = "A matrícula ou e-mail é obrigatória."
                         isValid = false
                     }
-                    
+
                     if (password.length < 6) {
                         passwordError = "A senha deve ter no mínimo 6 caracteres."
                         isValid = false
                     }
-                    
+
                     if (isValid) {
                         onLoginSuccess()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
             ) {
                 Text(
                     text = "Entrar",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         }
