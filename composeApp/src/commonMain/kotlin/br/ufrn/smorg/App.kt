@@ -169,9 +169,10 @@ fun App() {
                                 val eq = equipment!!
                                 Card(
                                     modifier = Modifier.padding(24.dp).fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    ),
+                                    colors =
+                                        CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        ),
                                 ) {
                                     Column(
                                         modifier = Modifier.padding(20.dp),
@@ -179,7 +180,10 @@ fun App() {
                                     ) {
                                         Text(
                                             text = eq.name,
-                                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                            style =
+                                                MaterialTheme.typography.headlineSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                ),
                                         )
                                         Spacer(Modifier.height(8.dp))
                                         Text(
