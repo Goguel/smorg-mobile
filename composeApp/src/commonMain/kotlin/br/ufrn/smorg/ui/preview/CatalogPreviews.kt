@@ -63,7 +63,10 @@ fun EquipmentCatalogFullPreview() {
         EquipmentCatalogScreen(
             items = sampleList,
             selectedFilter = null,
+            isLoading = false,
+            errorMessage = null,
             snackbarHostState = snackbarHostState,
+            onRefresh = {},
             onFilterSelect = {},
             onEquipmentClick = {},
         )
