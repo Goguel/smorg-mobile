@@ -24,3 +24,7 @@ Thumbs.db
 *.hprof
 .konan/
 .kotlin/
+
+# Reference
+ref/
+/ref/
