@@ -1,4 +1,4 @@
-package br.ufrn.smorg.ui.screens
+﻿package br.ufrn.smorg.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -56,11 +58,13 @@ fun LoginScreen(
                 text = "SmOrg",
                 style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.semantics { heading() },
             )
             Text(
                 text = "Acesso ao Sistema",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { heading() },
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -69,7 +73,7 @@ fun LoginScreen(
                 value = identifier,
                 onValueChange = {
                     identifier = it
-                    identifierError = null // Limpa o erro ao digitar
+                    identifierError = null
                 },
                 label = { Text("Matrícula ou E-mail") },
                 isError = identifierError != null,
@@ -89,13 +93,13 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
-                    passwordError = null // Limpa o erro ao digitar
+                    passwordError = null
                 },
                 label = { Text("Senha") },
                 isError = passwordError != null,

@@ -1,20 +1,21 @@
-package br.ufrn.smorg
+﻿package br.ufrn.smorg
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -23,12 +24,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,18 +39,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import br.ufrn.smorg.data.remote.SmorgApiClient
 import br.ufrn.smorg.model.Equipment
 import br.ufrn.smorg.model.EquipmentStatus
 import br.ufrn.smorg.ui.components.EquipmentCard
+import br.ufrn.smorg.ui.components.EquipmentDetailContent
 import br.ufrn.smorg.ui.screens.LoginScreen
+import br.ufrn.smorg.ui.theme.SmOrgTheme
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -69,7 +75,7 @@ object ReturnEquipmentRoute
 
 @Composable
 fun App() {
-    MaterialTheme {
+    SmOrgTheme {
         val navController = rememberNavController()
 
         Surface(
@@ -138,7 +144,12 @@ fun App() {
                     )
                 }
 
-                composable<EquipmentDetailsRoute> { backStackEntry ->
+                composable<EquipmentDetailsRoute>(
+                    deepLinks =
+                        listOf(
+                            navDeepLink<EquipmentDetailsRoute>(basePath = "smorg://equipamento"),
+                        ),
+                ) { backStackEntry ->
                     val details: EquipmentDetailsRoute = backStackEntry.toRoute()
                     var equipment by remember { mutableStateOf<Equipment?>(null) }
                     var isLoadingDetails by remember { mutableStateOf(true) }
@@ -166,50 +177,11 @@ fun App() {
                                 }
                             }
                             equipment != null -> {
-                                val eq = equipment!!
-                                Card(
-                                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
-                                    colors =
-                                        CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        ),
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(20.dp),
-                                        horizontalAlignment = Alignment.Start,
-                                    ) {
-                                        Text(
-                                            text = eq.name,
-                                            style =
-                                                MaterialTheme.typography.headlineSmall.copy(
-                                                    fontWeight = FontWeight.Bold,
-                                                ),
-                                        )
-                                        Spacer(Modifier.height(8.dp))
-                                        Text(
-                                            text = "Categoria: ${eq.category}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                        )
-                                        Spacer(Modifier.height(8.dp))
-                                        Text(
-                                            text = "Tag NFC: ${eq.nfcTagId}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.outline,
-                                        )
-                                        Spacer(Modifier.height(8.dp))
-                                        SuggestionChip(
-                                            onClick = {},
-                                            label = { Text("Status: ${eq.status}") },
-                                        )
-                                        Spacer(Modifier.height(24.dp))
-                                        Button(
-                                            onClick = { navController.popBackStack() },
-                                            modifier = Modifier.fillMaxWidth(),
-                                        ) {
-                                            Text("Voltar")
-                                        }
-                                    }
-                                }
+                                EquipmentDetailContent(
+                                    equipment = equipment!!,
+                                    onBackOrClose = { navController.popBackStack() },
+                                    closeLabel = "Voltar",
+                                )
                             }
                             else -> {
                                 Column(
@@ -254,6 +226,8 @@ fun EquipmentCatalogScreen(
     onEquipmentClick: (Equipment) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var selectedEquipmentForWide by remember { mutableStateOf<Equipment?>(null) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -263,6 +237,7 @@ fun EquipmentCatalogScreen(
                         Text(
                             text = "SmOrg Mobile",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.semantics { heading() },
                         )
                         Text(
                             text = "Controle de Ativos e Empréstimos NFC",
@@ -288,75 +263,152 @@ fun EquipmentCatalogScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
-        Column(
+        BoxWithConstraints(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
         ) {
-            FilterSection(
-                selectedFilter = selectedFilter,
-                onFilterSelect = onFilterSelect,
-            )
+            val isWide = maxWidth >= 600.dp
 
-            when {
-                isLoading && items.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
+            if (isWide) {
+                // Layout adaptado para largura média/expandida (celular deitado, tablet, desktop)
+                Row(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier =
+                            Modifier
+                                .width(380.dp)
+                                .fillMaxHeight(),
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator()
-                            Spacer(Modifier.height(16.dp))
-                            Text(
-                                text = "Buscando dados da nuvem...",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        FilterSection(
+                            selectedFilter = selectedFilter,
+                            onFilterSelect = onFilterSelect,
+                        )
+
+                        CatalogListContent(
+                            items = items,
+                            isLoading = isLoading,
+                            errorMessage = errorMessage,
+                            onRefresh = onRefresh,
+                            onEquipmentClick = { eq ->
+                                selectedEquipmentForWide = eq
+                            },
+                        )
                     }
-                }
-                errorMessage != null && items.isEmpty() -> {
+
+                    VerticalDivider()
+
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth().padding(24.dp),
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .padding(16.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "Erro de conexão",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.error,
+                        if (selectedEquipmentForWide != null) {
+                            EquipmentDetailContent(
+                                equipment = selectedEquipmentForWide!!,
+                                onBackOrClose = { selectedEquipmentForWide = null },
+                                closeLabel = "Fechar Painel",
                             )
-                            Spacer(Modifier.height(8.dp))
+                        } else {
                             Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.bodySmall,
+                                text = "Selecione um equipamento da lista ao lado para ver seus detalhes",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            OutlinedButton(onClick = onRefresh) {
-                                Text("Tentar Novamente")
-                            }
-                        }
-                    }
-                }
-                items.isEmpty() -> {
-                    EmptyCatalogState(modifier = Modifier.weight(1f))
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(items, key = { it.id }) { equipment ->
-                            EquipmentCard(
-                                equipment = equipment,
-                                onClick = onEquipmentClick,
                             )
                         }
                     }
+                }
+            } else {
+                // Layout compacto (celular em pé tradicional)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    FilterSection(
+                        selectedFilter = selectedFilter,
+                        onFilterSelect = onFilterSelect,
+                    )
+
+                    CatalogListContent(
+                        items = items,
+                        isLoading = isLoading,
+                        errorMessage = errorMessage,
+                        onRefresh = onRefresh,
+                        onEquipmentClick = onEquipmentClick,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CatalogListContent(
+    items: List<Equipment>,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onRefresh: () -> Unit,
+    onEquipmentClick: (Equipment) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when {
+        isLoading && items.isEmpty() -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = "Buscando dados da nuvem...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+        errorMessage != null && items.isEmpty() -> {
+            Box(
+                modifier = modifier.fillMaxSize().padding(24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Erro de conexão",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.semantics { heading() },
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedButton(onClick = onRefresh) {
+                        Text("Tentar Novamente")
+                    }
+                }
+            }
+        }
+        items.isEmpty() -> {
+            EmptyCatalogState(modifier = modifier)
+        }
+        else -> {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(items, key = { it.id }) { equipment ->
+                    EquipmentCard(
+                        equipment = equipment,
+                        onClick = onEquipmentClick,
+                    )
                 }
             }
         }
@@ -406,6 +458,7 @@ fun EmptyCatalogState(modifier: Modifier = Modifier) {
                 text = "Nenhum equipamento encontrado",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { heading() },
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
