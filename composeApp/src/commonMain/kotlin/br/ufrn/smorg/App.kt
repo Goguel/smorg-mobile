@@ -1,5 +1,6 @@
 ﻿package br.ufrn.smorg
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -19,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -75,7 +78,10 @@ object ReturnEquipmentRoute
 
 @Composable
 fun App() {
-    SmOrgTheme {
+    val systemInDark = isSystemInDarkTheme()
+    var isDarkTheme by remember { mutableStateOf(systemInDark) }
+
+    SmOrgTheme(darkTheme = isDarkTheme) {
         val navController = rememberNavController()
 
         Surface(
@@ -134,6 +140,8 @@ fun App() {
                         isLoading = isLoading,
                         errorMessage = errorMessage,
                         snackbarHostState = snackbarHostState,
+                        isDarkTheme = isDarkTheme,
+                        onToggleTheme = { isDarkTheme = !isDarkTheme },
                         onRefresh = { refreshCounter++ },
                         onFilterSelect = { newFilter ->
                             selectedStatus = if (selectedStatus == newFilter) null else newFilter
@@ -221,6 +229,8 @@ fun EquipmentCatalogScreen(
     isLoading: Boolean,
     errorMessage: String?,
     snackbarHostState: SnackbarHostState,
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     onRefresh: () -> Unit,
     onFilterSelect: (EquipmentStatus) -> Unit,
     onEquipmentClick: (Equipment) -> Unit,
@@ -246,6 +256,19 @@ fun EquipmentCatalogScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = onToggleTheme,
+                        modifier =
+                            Modifier.semantics {
+                                contentDescription =
+                                    if (isDarkTheme) "Alternar para tema claro" else "Alternar para tema escuro"
+                            },
+                    ) {
+                        Text(
+                            text = if (isDarkTheme) "☀️" else "🌙",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
                     TextButton(onClick = onRefresh) {
                         Text(
                             text = "Atualizar",
