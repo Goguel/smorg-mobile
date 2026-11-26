@@ -1,4 +1,4 @@
-package br.ufrn.smorg.ui.components
+package br.ufrn.smorg.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import br.ufrn.smorg.model.Equipment
-import br.ufrn.smorg.model.EquipmentStatus
+import br.ufrn.smorg.domain.Equipment
+import br.ufrn.smorg.domain.EquipmentStatus
 
 @Composable
 fun EquipmentCard(
@@ -73,7 +74,7 @@ fun EquipmentCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = equipment.name,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
@@ -106,11 +107,22 @@ fun EquipmentCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "NFC Tag: ${equipment.nfcTagId}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.outline,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "NFC Tag: ${equipment.nfcTagId}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                Text(
+                    text = "Ver detalhes →",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
 
             if (equipment.status == EquipmentStatus.BORROWED && equipment.borrowerName != null) {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -119,6 +131,13 @@ fun EquipmentCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                 )
+                if (equipment.returnDueDate != null) {
+                    Text(
+                        text = "Devolução até: ${equipment.returnDueDate}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }
