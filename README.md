@@ -1,92 +1,122 @@
-﻿# SmOrg (Smart Organization) â€” Mobile
+# SmOrg (Smart Organization) — Mobile
 
-RepositÃ³rio da aplicaÃ§Ã£o cliente mÃ³vel do sistema **SmOrg**, um ecossistema de gestÃ£o de ativos fÃ­sicos e controle de emprÃ©stimos por aproximaÃ§Ã£o (**NFC**) para laboratÃ³rios acadÃªmicos, projetado para oferecer uma experiÃªncia de "atrito zero".
+Repositório da aplicação cliente móvel do sistema **SmOrg**, um ecossistema de gestão de ativos físicos e controle de empréstimos por aproximação (**NFC**) para laboratórios acadêmicos, projetado para oferecer uma experiência de "atrito zero".
 
-Desenvolvido para a disciplina **DIM0524 â€” Desenvolvimento de Sistemas para Dispositivos MÃ³veis** (UFRN / DIMAp).
+Desenvolvido para a disciplina **DIM0524 — Desenvolvimento de Sistemas para Dispositivos Móveis** (UFRN / DIMAp).
 
-O documento detalhado com visÃ£o do produto, MVP, backlog e decisÃµes tÃ©cnicas encontra-se em [`docs/proposta.md`](docs/proposta.md).
+* **Proposta do Produto e MVP:** [`docs/proposta.md`](docs/proposta.md)
+* **Documentação de Arquitetura e Estado (Sprint 2):** [`docs/arquitetura.md`](docs/arquitetura.md)
+* **Registro de Uso de IA:** [`docs/uso-de-ia.md`](docs/uso-de-ia.md)
 
 ---
 
-## Equipe e InformaÃ§Ãµes AcadÃªmicas
+## Equipe e Informações Acadêmicas
 
-* **Aluno:** Miguel Xavier de Morais (MatrÃ­cula: `20240027427`)
-* **Coorte de ApresentaÃ§Ã£o:** Coorte A (Presencial)
-* **IntegraÃ§Ã£o Declarada:** Este projeto estÃ¡ formalmente integrado com a disciplina **DIM0547 â€” Desenvolvimento de Sistemas Web II**. O backend consumido por este aplicativo mÃ³vel Ã© o [SmOrg API](https://github.com/Goguel/smorg-api), construÃ­do em Kotlin (Ktor) e Go (gRPC).
+* **Aluno:** Miguel Xavier de Morais (Matrícula: `20240027427`)
+* **Integração Declarada:** Este projeto está formalmente integrado com a disciplina **DIM0547 — Desenvolvimento de Sistemas Web II**. O backend consumido por este aplicativo móvel é o [SmOrg API](https://github.com/Goguel/smorg-api), construído em Kotlin (Ktor) e Go (gRPC).
+* **Vídeo de Demonstração (Sprint 2 — 5 min):** [Link do Vídeo da Sprint 2](URL_DO_VIDEO_SPRINT_2_AQUI)
 
 ---
 
 ## Arquitetura e Tecnologias
 
-A aplicaÃ§Ã£o mÃ³vel adota **Kotlin Multiplatform (KMP)** e **Compose Multiplatform**, permitindo o compartilhamento integral da lÃ³gica de negÃ³cios e da interface grÃ¡fica declarativa em `commonMain`:
+A aplicação adota **Kotlin Multiplatform (KMP)** e **Compose Multiplatform**, compartilhando integralmente as camadas de domínio (`domain`), dados (`data`) e apresentação (`presentation`) em `commonMain`:
 
-* **Linguagem:** Kotlin
-* **Interface Declarativa:** Compose Multiplatform com Material 3 (suporte a modo claro/escuro e layout adaptativo)
-* **NavegaÃ§Ã£o:** Navigation Compose com rotas tipadas, passagem de argumentos e deep links
-* **Gerenciamento de Estado:** ViewModel multiplataforma com `StateFlow` e modelagem de UI por interfaces seladas
-* **InjeÃ§Ã£o de DependÃªncias:** Koin em `commonMain`
-* **ComunicaÃ§Ã£o de Rede:** Ktor Client + `kotlinx.serialization` consumindo a [SmOrg API](https://github.com/Goguel/smorg-api)
-* **PersistÃªncia Local e Cache Offline:** Room / SQLDelight com esquema versionado e polÃ­tica offline-first
-* **Recursos Nativos:** Suporte a NFC e hardware via abstraÃ§Ãµes `expect`/`actual`
-* **Testes e Qualidade:** `kotlin.test`, Turbine (Flows), Compose UI Tests, `ktlint` e `detekt`
+* **Linguagem:** Kotlin 2.0.21
+* **Interface Declarativa:** Compose Multiplatform com Material 3 (suporte a modo claro/escuro, semântica de acessibilidade e layout adaptativo compacto/expandido)
+* **Navegação:** Navigation Compose com rotas tipadas (`@Serializable`), argumentos e deep link (`smorg://equipamento/{id}`)
+* **Gerenciamento de Estado:** ViewModels multiplataforma (`CatalogViewModel`, `LoginViewModel`) expondo `StateFlow` imutável e estados de tela modelados por interfaces seladas (`Loading`, `Empty`, `Success`, `Error`)
+* **Injeção de Dependências:** Raiz de composição centralizada em [`AppModule.kt`](composeApp/src/commonMain/kotlin/br/ufrn/smorg/AppModule.kt), injetando `EquipmentRepository` por construtor
+* **Comunicação de Rede:** Ktor Client (`OkHttp` no Android, `CIO` no Desktop, `Darwin` no iOS) + `kotlinx.serialization`, com `expectSuccess = true`, `ignoreUnknownKeys = true`, DTOs separados do domínio e tradução para falhas nomeadas (`NoConnection` e `InvalidResponse`)
+* **Persistência Local (Offline-First):** `DataStore Preferences` multiplataforma (`CachedEquipmentRepository`), garantindo abertura sem rede com exibição do último conteúdo salvo e aviso de dados offline
+* **Testes e Qualidade:** 27 testes automatizados em `commonTest` (`kotlin.test`, `Turbine`, `kotlinx-coroutines-test`, `MockEngine` do Ktor e `runComposeUiTest`), além de `ktlint` e `detekt` no GitHub Actions
 
 ---
 
-## Como Executar Localmente
+## Como Executar Localmente (em menos de 15 minutos)
 
-### PrÃ©-requisitos
-* **JDK 17** ou superior instalado e configurado no `JAVA_HOME`.
-* **Android Studio** atualizado com o plugin *Kotlin Multiplatform*.
-* Dispositivo fÃ­sico Android conectado via USB (com depuraÃ§Ã£o ativada) ou emulador Android configurado.
+### 1. Pré-requisitos
+* **JDK 17 ou 21** instalado e configurado no `JAVA_HOME`.
+* **Android Studio** (com Android SDK 35) para rodar no emulador/dispositivo físico Android, ou apenas o terminal para rodar no alvo **Desktop (JVM)**.
 
-### ExecuÃ§Ã£o no Desktop (Ciclo RÃ¡pido com Hot Reload)
-Para desenvolvimento Ã¡gil de interfaces sem a necessidade de iniciar o emulador:
+### 2. Como Apontar para o Backend (`SmOrg API`)
+
+O endereço do backend é definido por plataforma via `expect`/`actual` em `br.ufrn.smorg.data.defaultApiBaseUrl`:
+
+* **Padrão (Nuvem — zero configuração):** Tanto no Android quanto no Desktop, o app já aponta por padrão para a instância pública da API de Web II no Render (`https://smorg-api.onrender.com/api/v1`).
+* **No Desktop (via variável de ambiente `SMORG_API`):**
+  * **Usar a API na nuvem (padrão):**
+    ```bash
+    ./gradlew :composeApp:run
+    ```
+  * **Usar a API rodando localmente (`http://localhost:8080/api/v1`):**
+    ```bash
+    SMORG_API=http://localhost:8080/api/v1 ./gradlew :composeApp:run
+    ```
+  * **Rodar sem backend (repositório em memória):**
+    ```bash
+    SMORG_API=memoria ./gradlew :composeApp:run
+    ```
+* **No Android (`ApiAddress.android.kt`):**
+  * Para apontar o emulador Android para o backend rodando localmente na máquina hospedeira, altere `defaultApiBaseUrl` em [`ApiAddress.android.kt`](composeApp/src/androidMain/kotlin/br/ufrn/smorg/data/ApiAddress.android.kt) para `"http://10.0.2.2:8080/api/v1"`.
+
+### 3. Execução no Desktop e no Android
+
+* **Rodar no Desktop (JVM):**
+  ```bash
+  ./gradlew :composeApp:run
+  ```
+* **Instalar e rodar no Emulador / Dispositivo Android conectado:**
+  ```bash
+  ./gradlew :composeApp:installDebug
+  ```
+* **Gerar o APK de Debug (`composeApp/build/outputs/apk/debug/composeApp-debug.apk`):**
+  ```bash
+  ./gradlew :composeApp:assembleDebug
+  ```
+
+### 4. Como Rodar os Testes Automatizados e Análise Estática
+
+Todos os **27 testes** (ViewModel com Turbine, Interface Compose, Repositório Remoto com `MockEngine`, Cache Local com DataStore, Módulo de DI e Regras de Domínio) rodam no alvo Desktop sem precisar de emulador:
+
 ```bash
-./gradlew :composeApp:run
+./gradlew :composeApp:desktopTest
 ```
 
-### ExecuÃ§Ã£o no Android
-Via linha de comando:
-```bash
-./gradlew :composeApp:installDebug
-```
-Ou selecione a configuraÃ§Ã£o **composeApp** no Android Studio e clique em **Run â–¶**.
+Para executar a verificação de estilo e análise estática (`ktlint` + `detekt`):
 
-### AnÃ¡lise EstÃ¡tica de CÃ³digo (Qualidade)
-Para conferir localmente as regras de estilo e lint antes do commit:
 ```bash
 ./gradlew ktlintCheck detekt
 ```
 
 ---
 
----
-
-## Demonstração de Recursos da Sprint 1
+## Demonstração de Recursos
 
 ### Deep Link
-O aplicativo suporta deep links no esquema `smorg://equipamento/{id}`. Para testar no emulador ou dispositivo via terminal:
+O aplicativo suporta deep links no esquema `smorg://equipamento/{id}`. Para testar no emulador ou dispositivo Android via terminal:
 ```bash
 adb shell am start -a android.intent.action.VIEW -d "smorg://equipamento/ID_DO_ITEM"
 ```
 
 ### Layout Adaptativo (2 Larguras)
 * **Largura compacta (< 600dp, smartphone em pé):** exibe a lista de equipamentos em tela cheia com navegação empilhada para a tela de detalhes.
-* **Largura expandida (>= 600dp, smartphone na horizontal, tablet, desktop):** exibe lista e detalhes lado a lado em duas colunas com `VerticalDivider`, aproveitando o espaço útil sem rolagem horizontal ou overflow.
+* **Largura expandida (>= 600dp, smartphone na horizontal, tablet, desktop):** exibe lista e detalhes lado a lado em duas colunas com `VerticalDivider`, aproveitando o espaço útil sem overflow.
 
-### Acessibilidade e Tema
-* **Tema Material 3:** alternância dinâmica entre modo claro e escuro (`isSystemInDarkTheme()`).
-* **Acessibilidade:** descrições de conteúdo em elementos visuais, títulos marcados com `heading()` para leitores de tela (TalkBack) e alvos de toque >= 48dp.
+### Operação Offline (Cache Local)
+1. Abra o aplicativo conectado à internet para carregar os equipamentos da API (os dados são salvos automaticamente via DataStore em `filesDir` no Android ou `~/.smorg-mobile` no Desktop).
+2. Feche o aplicativo e desligue a rede (Modo Avião no Android ou parada da API).
+3. Abra o aplicativo novamente: a última lista salva será exibida imediatamente com o aviso *"Sem conexão: mostrando a última lista salva no aparelho."*
 
 ---
 
-## Checklist de Avaliação (Rúbricas Atualizadas)
+## Checklist de Avaliação (Rúbricas)
 
 ### Sprint 0 — Fundação, Proposta e CI
 - [x] Repositório público, app compila e roda nos alvos Android e Desktop
 - [x] CI verde no GitHub Actions (`ktlintCheck` + `detekt`)
 - [x] `docs/proposta.md` completo com justificativa de plataforma e backend
-- [x] Coorte (A - Presencial) e integração declaradas
+- [x] Coorte e integração com Sistemas Web II declaradas
 - [x] Vídeo de 5 minutos publicado
 
 ### Sprint 1 — Interface e Navegação
@@ -96,15 +126,15 @@ adb shell am start -a android.intent.action.VIEW -d "smorg://equipamento/ID_DO_I
 - [x] Layout adaptado a 2 larguras de janela (compacto e lado a lado expandido)
 - [x] Acessibilidade: descrições de conteúdo, contraste, alvos >= 48dp e semântica com `heading()`
 - [x] Formulário de Login com validações de entrada e teclados específicos
-- [ ] Vídeo de 5 minutos: [Link do Vídeo](URL_DO_VIDEO_AQUI)
+- [x] Vídeo de 5 minutos
 
 ### Sprint 2 (Final) — Estado, Rede, Persistência e Testes
-- [ ] Estado gerenciado com ViewModel multiplataforma e `StateFlow`
-- [ ] Arquitetura em camadas (`data`, `domain`, `presentation`) em `commonMain`
-- [ ] Estados da interface modelados por classes seladas (Loading, Success, Empty, Error)
-- [ ] Dados reais do backend via Ktor Client com DTOs desacoplados do domínio
-- [ ] Tratamento de falha de conexão e resposta inválida com estado de tela próprio
-- [ ] Persistência local (os dados sobrevivem ao fechamento do app e abrem sem rede)
-- [ ] >= 5 testes de interface e >= 5 testes de ViewModel com Turbine, verdes no CI
-- [ ] `docs/arquitetura.md`, README e APK de debug anexado a uma release
+- [x] Estado com ViewModel multiplataforma (`CatalogViewModel`, `LoginViewModel`) e `StateFlow`
+- [x] Camadas `data`, `domain` e `presentation` separadas em `commonMain`; domínio sem import de Compose, Ktor ou DataStore
+- [x] Estados `Loading`, `Error`, `Empty` e `Success` modelados por interface selada com `when` sem `else`
+- [x] Dados reais do backend escolhido via Ktor Client com `EquipamentoDto` separado da entidade de domínio
+- [x] Falha de conexão (`NoConnection`) e resposta inválida (`InvalidResponse`) com estado e mensagem próprios na tela
+- [x] Dados do usuário sobrevivem ao fechamento do app (`DataStore`) e abrem sem rede com aviso de cache
+- [x] >= 5 testes de interface (`ScreensUiTest`) e >= 5 testes de ViewModel com Turbine (`CatalogViewModelTest`), verdes no CI
+- [x] `docs/arquitetura.md`, `README.md` atualizado e APK de debug gerado
 - [ ] Vídeo 5 min
