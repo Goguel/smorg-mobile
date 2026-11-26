@@ -1,4 +1,4 @@
-package br.ufrn.smorg.ui.preview
+package br.ufrn.smorg.presentation.preview
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import br.ufrn.smorg.EmptyCatalogState
 import br.ufrn.smorg.EquipmentCatalogScreen
-import br.ufrn.smorg.model.Equipment
-import br.ufrn.smorg.model.EquipmentStatus
-import br.ufrn.smorg.ui.components.EquipmentCard
+import br.ufrn.smorg.domain.Equipment
+import br.ufrn.smorg.domain.EquipmentStatus
+import br.ufrn.smorg.presentation.CatalogScreenState
+import br.ufrn.smorg.presentation.CatalogUiState
+import br.ufrn.smorg.presentation.components.EquipmentCard
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview
@@ -61,10 +63,10 @@ fun EquipmentCatalogFullPreview() {
             )
         val snackbarHostState = remember { SnackbarHostState() }
         EquipmentCatalogScreen(
-            items = sampleList,
-            selectedFilter = null,
-            isLoading = false,
-            errorMessage = null,
+            state =
+                CatalogUiState(
+                    screen = CatalogScreenState.Success(items = sampleList),
+                ),
             snackbarHostState = snackbarHostState,
             onRefresh = {},
             onFilterSelect = {},
