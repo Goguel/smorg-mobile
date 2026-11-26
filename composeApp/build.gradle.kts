@@ -67,6 +67,9 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+
+            // Persistência Local (DataStore Multiplatform)
+            implementation(libs.datastore.preferences.core)
         }
 
         iosMain.dependencies {
@@ -80,8 +83,19 @@ kotlin {
             implementation(libs.ktor.client.cio)
         }
 
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
+        }
+
         commonTest.dependencies {
             implementation(kotlin("test"))
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
         }
     }
 }
