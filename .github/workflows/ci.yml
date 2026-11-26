@@ -8,12 +8,17 @@ on:
 
 jobs:
   build:
-    name: Build & Qualidade de Código
+    name: Build, Testes & Qualidade de Código
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
+
+      - name: Instalar bibliotecas gráficas para testes de UI Desktop
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libfontconfig1
 
       - name: Configurar JDK 17
         uses: actions/setup-java@v4
@@ -29,6 +34,9 @@ jobs:
 
       - name: Análise Estática (ktlint e detekt)
         run: ./gradlew ktlintCheck detekt --continue
+
+      - name: Testes Automatizados (ViewModel, Repositório, Cache e UI no Desktop)
+        run: ./gradlew :composeApp:desktopTest
 
       - name: Compilar App Android (assembleDebug)
         run: ./gradlew assembleDebug
