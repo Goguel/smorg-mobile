@@ -2,7 +2,8 @@
 java = "17"
 
 [tasks]
-build = "./gradlew assembleDebug"
+build = "./gradlew :composeApp:assembleDebug"
+test = "./gradlew :composeApp:desktopTest"
 lint = "./gradlew ktlintCheck detekt"
-ci = "./gradlew ktlintCheck detekt assembleDebug"
+ci = "./gradlew ktlintCheck detekt :composeApp:desktopTest :composeApp:assembleDebug"
 desktop = "./gradlew :composeApp:run"
